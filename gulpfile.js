@@ -1,19 +1,50 @@
 var gulp = require('gulp'),
 	jade = require('gulp-jade'),
-	sass = require('gulp-sass');
+	sass = require('gulp-sass'),
+	browserSync = require('browser-sync'),
+	reload      = browserSync.reload;
 
 /*gulp.task('default', function(){
 	console.log('Gulp "Default" Task is Start');
 	gulp.start('eat:food');
 });*/
 
-gulp.task('default', ['jade', 'sass', 'watch']);
+var config = {
+	'jade': { 'pretty': true },
+	'sass': {
+		'outputStyle': 'compact' // compact, compressed, nested, expanded
+	}
+};
 
-gulp.task('eat:food', function(){
-	console.log('eating food');
+// gulp.task('default', ['jade', 'sass', 'watch']);
+
+gulp.task('default', ['jade', 'sass'], function() {
+	browserSync({'server': './dist'})
+	gulp.start('watch');
 });
 
-gulp.task('jade', function(){
+gulp.task('watch:jade', ['jade'], reload);
+
+gulp.task('jade', function() {
+	return gulp.src('src/**/*.jade')
+		.pipe( jade( config.jade ) )
+		.on('error', errorLog)
+		.pipe( gulp.dest('dist') );
+});
+
+gulp.task('sass', function() {
+	return gulp.src('src/sass/**/*.scss')
+		.pipe( sass( config.sass ).on('error', sass.logError) )
+		.pipe( gulp.dest('dist/css') )
+		.pipe( reload({stream: true}) );
+});
+
+gulp.task('watch', function() {
+	gulp.watch(['src/**/*.jade'], ['watch:jade']);
+	gulp.watch(['src/sass/**/*.scss'], ['sass']);
+});
+
+/*gulp.task('jade', function(){
 	gulp.src('src/index.jade')
 		.pipe(jade({pretty:true}))
 		.pipe(gulp.dest('dist'));
@@ -29,4 +60,5 @@ gulp.task('watch', function(){
 	gulp.src('src/index.jade')
 		.pipe(jade())
 		.pipe(gulp.dest('dist'));
-});
+});*/
+
