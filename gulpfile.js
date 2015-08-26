@@ -44,6 +44,11 @@ gulp.task('watch', function() {
 	gulp.watch(['src/sass/**/*.scss'], ['sass']);
 });
 
+function errorLog(error) {
+	console.error.bind(error);
+	this.emit('end');
+}
+
 /*gulp.task('jade', function(){
 	gulp.src('src/index.jade')
 		.pipe(jade({pretty:true}))
